@@ -1,0 +1,3 @@
+/Users/maksim/CLionProjects/voice_chat/cmake-build-debug/CMakeFiles/voice_chat.dir
+/Users/maksim/CLionProjects/voice_chat/cmake-build-debug/CMakeFiles/edit_cache.dir
+/Users/maksim/CLionProjects/voice_chat/cmake-build-debug/CMakeFiles/rebuild_cache.dir
