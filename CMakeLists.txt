@@ -2,28 +2,24 @@ cmake_minimum_required(VERSION 3.31)
 project(voice_chat)
 
 set(CMAKE_CXX_STANDARD 20)
-find_package(PortAudio QUIET)
-if(NOT PortAudio_FOUND)
-    message(STATUS "PortAudio not found via find_package, trying pkg-config")
-    find_package(PkgConfig REQUIRED)
-    pkg_check_modules(PORTAUDIO portaudio-2.0)
-    if(PORTAUDIO_FOUND)
-        add_library(PortAudio::PortAudio UNKNOWN IMPORTED)
-        if(APPLE)
-            set_target_properties(PortAudio::PortAudio PROPERTIES
-                    IMPORTED_LOCATION "${PORTAUDIO_LIBDIR}/libportaudio.dylib"
-                    INTERFACE_INCLUDE_DIRECTORIES "${PORTAUDIO_INCLUDEDIR}"
-            )
-        else()
-            set_target_properties(PortAudio::PortAudio PROPERTIES
-                    IMPORTED_LOCATION "${PORTAUDIO_LIBDIR}/libportaudio.so"
-                    INTERFACE_INCLUDE_DIRECTORIES "${PORTAUDIO_INCLUDEDIR}"
-            )
-        endif()
-    else()
-        message(FATAL_ERROR "PortAudio not found. Install it (e.g., apt install libportaudio2 libportaudio-dev) and re-run CMake.")
-    endif()
+
+#Apple Silicon
+include_directories(/opt/homebrew/opt/portaudio/include)
+link_directories(/opt/homebrew/opt/portaudio/lib)
+
+# Настройка для Windows
+if(WIN32)
+    add_definitions(-DWIN32_LEAN_AND_MEAN)
+    set(PLATFORM_LIBS ws2_32 winmm)
+else()
+    # Настройка для macOS/Linux
+    set(PLATFORM_LIBS pthread)
 endif()
-add_executable(voice_chat main.cpp)
 
+# Сервер
+add_executable(voice_server server.cpp)
+target_link_libraries(voice_server portaudio ${PLATFORM_LIBS})
 
+# Клиент
+add_executable(voice_client client.cpp)
+target_link_libraries(voice_client portaudio ${PLATFORM_LIBS})
